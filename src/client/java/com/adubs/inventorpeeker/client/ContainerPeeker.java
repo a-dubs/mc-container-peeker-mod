@@ -37,7 +37,7 @@ public final class ContainerPeeker {
 	}
 
 	/** Immutable snapshot of a container's contents for rendering. */
-	public record PeekResult(Component title, List<ItemStack> items) {
+	public record PeekResult(BlockPos pos, Component title, List<ItemStack> items) {
 		public int size() {
 			return items.size();
 		}
@@ -48,22 +48,6 @@ public final class ContainerPeeker {
 		cachedPos = pos.immutable();
 		cachedItems = items;
 		cachedAtMs = System.currentTimeMillis();
-	}
-
-	/**
-	 * Returns the position of the container block the crosshair is on, or {@code null} if the
-	 * player is not looking at a container. Works on remote servers because the block entity type
-	 * is synced to the client even when its contents are not.
-	 */
-	public static BlockPos lookedAtContainerPos(Minecraft minecraft) {
-		if (minecraft.level == null) {
-			return null;
-		}
-		BlockPos pos = raycastBlock(minecraft);
-		if (pos == null) {
-			return null;
-		}
-		return HopperBlockEntity.getContainerAt(minecraft.level, pos) != null ? pos : null;
 	}
 
 	public static PeekResult resolveLookedAtContainer(Minecraft minecraft) {
@@ -93,21 +77,21 @@ public final class ContainerPeeker {
 			if (serverLevel != null) {
 				Container serverContainer = HopperBlockEntity.getContainerAt(serverLevel, pos);
 				if (serverContainer != null) {
-					return new PeekResult(title, snapshot(serverContainer));
+					return new PeekResult(pos, title, snapshot(serverContainer));
 				}
 			}
-			return new PeekResult(title, snapshot(clientContainer));
+			return new PeekResult(pos, title, snapshot(clientContainer));
 		}
 
 		// Remote server: use the cached snapshot if it matches and is fresh.
 		if (cachedItems != null && pos.equals(cachedPos)
 				&& System.currentTimeMillis() - cachedAtMs <= REMOTE_CACHE_TTL_MS) {
-			return new PeekResult(title, cachedItems);
+			return new PeekResult(pos, title, cachedItems);
 		}
 
 		// No fresh data yet; show the (empty) grid so the panel appears immediately and fills in
 		// once the response arrives.
-		return new PeekResult(title, snapshot(clientContainer));
+		return new PeekResult(pos, title, snapshot(clientContainer));
 	}
 
 	private static BlockPos raycastBlock(Minecraft minecraft) {

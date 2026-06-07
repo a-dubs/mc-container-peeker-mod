@@ -20,12 +20,19 @@ public class InventorPeekerClient implements ClientModInitializer {
 	private static final KeyMapping.Category KEY_CATEGORY =
 			KeyMapping.Category.register(Identifier.fromNamespaceAndPath(InventorPeeker.MOD_ID, "main"));
 
-	/** Re-request a remote container's contents at most this often (ticks). ~4/sec. */
-	private static final int REMOTE_REFRESH_TICKS = 5;
+	/** Re-request a remote container's contents at most this often (ticks). 20/REMOTE_REFRESH_TICKS = ~10/sec. */
+	private static final int REMOTE_REFRESH_TICKS = 2;
 
 	private static PeekConfig config;
 	private static KeyMapping peekKey;
 	private static boolean toggledOn = false;
+
+	/**
+	 * Latest container snapshot, recomputed once per client tick and drawn each frame. Resolving
+	 * here (instead of in the per-frame HUD callback) avoids redundant container lookups and item
+	 * copies at high frame rates.
+	 */
+	private static ContainerPeeker.PeekResult currentResult;
 
 	/** Exposes the live config instance for the in-game settings screen. */
 	public static PeekConfig getConfig() {
@@ -56,20 +63,10 @@ public class InventorPeekerClient implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
 
 		HudRenderCallback.EVENT.register((graphics, delta) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			if (!isActive(minecraft)) {
-				return;
+			ContainerPeeker.PeekResult result = currentResult;
+			if (result != null) {
+				PeekHud.render(graphics, Minecraft.getInstance(), config, result);
 			}
-
-			ContainerPeeker.PeekResult result = ContainerPeeker.resolveLookedAtContainer(minecraft);
-			if (result == null) {
-				return;
-			}
-			if (config.hideWhenEmpty && isEmpty(result)) {
-				return;
-			}
-
-			PeekHud.render(graphics, minecraft, config, result);
 		});
 
 		InventorPeeker.LOGGER.info("Inventory Peeker initialized (mode={}, corner={})", config.mode, config.corner);
@@ -87,25 +84,33 @@ public class InventorPeekerClient implements ClientModInitializer {
 			toggledOn = !toggledOn;
 		}
 
-		// On remote servers we have to ask the server for contents. Skip when an integrated server
-		// is present (we read those contents directly) or when the server lacks the mod.
-		if (!isActive(minecraft) || minecraft.getSingleplayerServer() != null) {
-			return;
-		}
-		if (!ClientPlayNetworking.canSend(PeekPayloads.Request.TYPE)) {
+		if (!isActive(minecraft)) {
+			currentResult = null;
 			return;
 		}
 
-		BlockPos pos = ContainerPeeker.lookedAtContainerPos(minecraft);
-		if (pos == null) {
-			return;
+		ContainerPeeker.PeekResult result = ContainerPeeker.resolveLookedAtContainer(minecraft);
+
+		// On remote servers we must ask the server for the live contents. Do this before the
+		// hide-when-empty check so data still arrives even while the panel is hidden as empty.
+		if (result != null
+				&& minecraft.getSingleplayerServer() == null
+				&& ClientPlayNetworking.canSend(PeekPayloads.Request.TYPE)) {
+			maybeRequestContents(result.pos());
 		}
 
+		if (result != null && config.hideWhenEmpty && isEmpty(result)) {
+			result = null;
+		}
+		currentResult = result;
+	}
+
+	private void maybeRequestContents(BlockPos pos) {
 		boolean targetChanged = !pos.equals(lastRequestPos);
 		boolean stale = tickCounter - lastRequestTick >= REMOTE_REFRESH_TICKS;
 		if (targetChanged || stale) {
-			ClientPlayNetworking.send(new PeekPayloads.Request(pos.immutable()));
-			lastRequestPos = pos.immutable();
+			ClientPlayNetworking.send(new PeekPayloads.Request(pos));
+			lastRequestPos = pos;
 			lastRequestTick = tickCounter;
 		}
 	}
