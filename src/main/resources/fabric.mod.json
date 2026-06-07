@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "inventorpeeker",
+	"version": "${version}",
+	"name": "Inventory Peeker",
+	"description": "Hold or toggle a hotkey while looking at a container to see its contents in a small corner overlay.",
+	"authors": [
+		"a-dubs"
+	],
+	"contact": {
+		"sources": "https://github.com/a-dubs/mc-inventor-peeker-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/inventorpeeker/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.adubs.inventorpeeker.InventorPeeker"
+		],
+		"client": [
+			"com.adubs.inventorpeeker.client.InventorPeekerClient"
+		],
+		"modmenu": [
+			"com.adubs.inventorpeeker.client.ModMenuIntegration"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*",
+		"cloth-config": "*"
+	}
+}

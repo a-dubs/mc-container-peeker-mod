@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Fabric Loom
+.loom-cache/
+
+# Dev run directory (generated worlds, server files, logs)
+run/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
