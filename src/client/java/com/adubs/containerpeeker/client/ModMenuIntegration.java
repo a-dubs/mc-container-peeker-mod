@@ -1,4 +1,4 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

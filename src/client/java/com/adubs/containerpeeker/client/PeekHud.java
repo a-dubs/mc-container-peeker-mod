@@ -1,4 +1,4 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -22,7 +22,7 @@ public final class PeekHud {
 	private PeekHud() {
 	}
 
-	public static void render(GuiGraphics graphics, Minecraft minecraft, PeekConfig config, ContainerPeeker.PeekResult result) {
+	public static void render(GuiGraphics graphics, Minecraft minecraft, PeekConfig config, ContainerReader.PeekResult result) {
 		List<ItemStack> items = result.items();
 		int size = items.size();
 		if (size <= 0) {

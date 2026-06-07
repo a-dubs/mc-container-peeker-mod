@@ -19,7 +19,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"inventorpeeker" {
+		"containerpeeker" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

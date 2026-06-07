@@ -1,6 +1,6 @@
-package com.adubs.inventorpeeker;
+package com.adubs.containerpeeker;
 
-import com.adubs.inventorpeeker.net.PeekPayloads;
+import com.adubs.containerpeeker.net.PeekPayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InventorPeeker implements ModInitializer {
-	public static final String MOD_ID = "inventorpeeker";
+public class ContainerPeeker implements ModInitializer {
+	public static final String MOD_ID = "containerpeeker";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	/** Max squared distance (blocks^2) a player may peek a container from. ~8 blocks. */

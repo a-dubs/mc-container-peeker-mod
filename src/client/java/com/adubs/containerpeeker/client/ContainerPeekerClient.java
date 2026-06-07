@@ -1,7 +1,7 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
-import com.adubs.inventorpeeker.InventorPeeker;
-import com.adubs.inventorpeeker.net.PeekPayloads;
+import com.adubs.containerpeeker.ContainerPeeker;
+import com.adubs.containerpeeker.net.PeekPayloads;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -14,11 +14,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-public class InventorPeekerClient implements ClientModInitializer {
+public class ContainerPeekerClient implements ClientModInitializer {
 
-	public static final String KEY_PEEK = "key.inventorpeeker.peek";
+	public static final String KEY_PEEK = "key.containerpeeker.peek";
 	private static final KeyMapping.Category KEY_CATEGORY =
-			KeyMapping.Category.register(Identifier.fromNamespaceAndPath(InventorPeeker.MOD_ID, "main"));
+			KeyMapping.Category.register(Identifier.fromNamespaceAndPath(ContainerPeeker.MOD_ID, "main"));
 
 	/** Re-request a remote container's contents at most this often (ticks). 20/REMOTE_REFRESH_TICKS = ~10/sec. */
 	private static final int REMOTE_REFRESH_TICKS = 2;
@@ -32,7 +32,7 @@ public class InventorPeekerClient implements ClientModInitializer {
 	 * here (instead of in the per-frame HUD callback) avoids redundant container lookups and item
 	 * copies at high frame rates.
 	 */
-	private static ContainerPeeker.PeekResult currentResult;
+	private static ContainerReader.PeekResult currentResult;
 
 	/** Exposes the live config instance for the in-game settings screen. */
 	public static PeekConfig getConfig() {
@@ -58,18 +58,18 @@ public class InventorPeekerClient implements ClientModInitializer {
 		));
 
 		ClientPlayNetworking.registerGlobalReceiver(PeekPayloads.Response.TYPE, (payload, context) ->
-				context.client().execute(() -> ContainerPeeker.cacheRemote(payload.pos(), payload.items())));
+				context.client().execute(() -> ContainerReader.cacheRemote(payload.pos(), payload.items())));
 
 		ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
 
 		HudRenderCallback.EVENT.register((graphics, delta) -> {
-			ContainerPeeker.PeekResult result = currentResult;
+			ContainerReader.PeekResult result = currentResult;
 			if (result != null) {
 				PeekHud.render(graphics, Minecraft.getInstance(), config, result);
 			}
 		});
 
-		InventorPeeker.LOGGER.info("Inventory Peeker initialized (mode={}, corner={})", config.mode, config.corner);
+		ContainerPeeker.LOGGER.info("Container Peeker initialized (mode={}, corner={})", config.mode, config.corner);
 	}
 
 	private void onClientTick(Minecraft minecraft) {
@@ -89,7 +89,7 @@ public class InventorPeekerClient implements ClientModInitializer {
 			return;
 		}
 
-		ContainerPeeker.PeekResult result = ContainerPeeker.resolveLookedAtContainer(minecraft);
+		ContainerReader.PeekResult result = ContainerReader.resolveLookedAtContainer(minecraft);
 
 		// On remote servers we must ask the server for the live contents. Do this before the
 		// hide-when-empty check so data still arrives even while the panel is hidden as empty.
@@ -131,7 +131,7 @@ public class InventorPeekerClient implements ClientModInitializer {
 		};
 	}
 
-	private static boolean isEmpty(ContainerPeeker.PeekResult result) {
+	private static boolean isEmpty(ContainerReader.PeekResult result) {
 		return result.items().stream().allMatch(stack -> stack.isEmpty());
 	}
 }

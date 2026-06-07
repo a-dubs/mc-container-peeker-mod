@@ -1,4 +1,4 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -22,9 +22,9 @@ import java.util.List;
  * <p>In singleplayer / LAN-host worlds we read straight from the integrated server's authoritative
  * block entity so the contents are real and live (including double chests). On a remote server the
  * client does not have container contents, so we rely on a short-lived cache that is populated by
- * {@link com.adubs.inventorpeeker.net.PeekPayloads.Response} packets requested from the server.
+ * {@link com.adubs.containerpeeker.net.PeekPayloads.Response} packets requested from the server.
  */
-public final class ContainerPeeker {
+public final class ContainerReader {
 
 	/** How long a remote snapshot stays valid before we stop showing it (ms). */
 	private static final long REMOTE_CACHE_TTL_MS = 3_000L;
@@ -33,7 +33,7 @@ public final class ContainerPeeker {
 	private static List<ItemStack> cachedItems;
 	private static long cachedAtMs;
 
-	private ContainerPeeker() {
+	private ContainerReader() {
 	}
 
 	/** Immutable snapshot of a container's contents for rendering. */

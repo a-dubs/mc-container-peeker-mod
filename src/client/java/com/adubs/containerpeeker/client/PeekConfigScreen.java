@@ -1,4 +1,4 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -13,12 +13,12 @@ public final class PeekConfigScreen {
 	}
 
 	public static Screen create(Screen parent) {
-		PeekConfig config = InventorPeekerClient.getConfig();
+		PeekConfig config = ContainerPeekerClient.getConfig();
 		PeekConfig defaults = new PeekConfig();
 
 		ConfigBuilder builder = ConfigBuilder.create()
 				.setParentScreen(parent)
-				.setTitle(Component.literal("Inventory Peeker"))
+				.setTitle(Component.literal("Container Peeker"))
 				.setSavingRunnable(config::save);
 
 		ConfigEntryBuilder entry = builder.entryBuilder();

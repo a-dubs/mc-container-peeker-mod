@@ -1,6 +1,6 @@
-package com.adubs.inventorpeeker.client;
+package com.adubs.containerpeeker.client;
 
-import com.adubs.inventorpeeker.InventorPeeker;
+import com.adubs.containerpeeker.ContainerPeeker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Lightweight JSON-backed configuration. Lives in {@code config/inventorpeeker.json} and is
+ * Lightweight JSON-backed configuration. Lives in {@code config/containerpeeker.json} and is
  * regenerated with defaults if missing or malformed.
  */
 public class PeekConfig {
@@ -65,7 +65,7 @@ public class PeekConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	private static Path configPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(InventorPeeker.MOD_ID + ".json");
+		return FabricLoader.getInstance().getConfigDir().resolve(ContainerPeeker.MOD_ID + ".json");
 	}
 
 	public static PeekConfig load() {
@@ -75,7 +75,7 @@ public class PeekConfig {
 			try (Reader reader = Files.newBufferedReader(path)) {
 				config = GSON.fromJson(reader, PeekConfig.class);
 			} catch (Exception e) {
-				InventorPeeker.LOGGER.warn("Failed to read {}, regenerating defaults", path, e);
+				ContainerPeeker.LOGGER.warn("Failed to read {}, regenerating defaults", path, e);
 			}
 		}
 		if (config == null) {
@@ -94,7 +94,7 @@ public class PeekConfig {
 				GSON.toJson(this, writer);
 			}
 		} catch (IOException e) {
-			InventorPeeker.LOGGER.warn("Failed to write config {}", path, e);
+			ContainerPeeker.LOGGER.warn("Failed to write config {}", path, e);
 		}
 	}
 

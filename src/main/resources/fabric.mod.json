@@ -1,27 +1,27 @@
 {
 	"schemaVersion": 1,
-	"id": "inventorpeeker",
+	"id": "containerpeeker",
 	"version": "${version}",
-	"name": "Inventory Peeker",
+	"name": "Container Peeker",
 	"description": "Hold or toggle a hotkey while looking at a container to see its contents in a small corner overlay.",
 	"authors": [
 		"a-dubs"
 	],
 	"contact": {
-		"sources": "https://github.com/a-dubs/mc-inventor-peeker-mod"
+		"sources": "https://github.com/a-dubs/mc-container-peeker-mod"
 	},
 	"license": "MIT",
-	"icon": "assets/inventorpeeker/icon.png",
+	"icon": "assets/containerpeeker/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.adubs.inventorpeeker.InventorPeeker"
+			"com.adubs.containerpeeker.ContainerPeeker"
 		],
 		"client": [
-			"com.adubs.inventorpeeker.client.InventorPeekerClient"
+			"com.adubs.containerpeeker.client.ContainerPeekerClient"
 		],
 		"modmenu": [
-			"com.adubs.inventorpeeker.client.ModMenuIntegration"
+			"com.adubs.containerpeeker.client.ModMenuIntegration"
 		]
 	},
 	"depends": {
